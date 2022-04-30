@@ -1,0 +1,55 @@
+
+:root {
+  --base: rgb(200,200,200);
+}
+
+body {
+  padding: 0;
+  background-color: var(--base);
+}
+
+.game {
+  width: 100vw;
+  height: 100vh;
+  padding: 1rem;
+  background-color: white;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  column-gap: 1rem;
+}
+
+.game .box {
+  padding: 1rem;
+}
+
+.game .players {
+  border: 1px solid black;
+  flex-grow: 1;
+}
+.game .players {
+  border: 1px solid black;
+}
+.game .players .name {
+  font-weight: bold;
+}
+
+.game .players .skill {
+  cursor: pointer;
+}
+.game .players .skill:hover {
+  font-weight: bold;
+}
+
+.game .players .list {
+  overflow-y: auto;
+}
+
+.game .story {
+  border: 1px solid black;
+  flex-grow: 1;
+}
+
+.game .story .list {
+  overflow-y: auto;
+}
