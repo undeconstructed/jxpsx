@@ -35,6 +35,43 @@
 
 </div>
 
+<div class="newplayer overlay">
+  <div class="prompt">
+    <h2>Nova ludanto</h2>
+    <form>
+      <div>Nomo: <input type="text" name="name"></div>
+      <div><button type="submit">kreu</button> <button type="button" name="cancel">nuligi</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="makeaction overlay">
+  <div class="prompt">
+    <h2>Kion fari?</h2>
+    <form class="input">
+      <div class="status">prompt</div>
+      <div>Nomo: <input type="text" name="name"></div>
+      <div><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="tryaction overlay">
+  <div class="prompt">
+    <h2>Provu</h2>
+    <div class="result">
+      <div class="status">prompt</div>
+      <div>Por: <span class="for"></span></div>
+      <div>Kontraŭ: <span class="against"></span></div>
+      <form class="input">
+        <div>Sekvo:</div>
+        <div><textarea name="next"></textarea></div>
+        <div><button>fini</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <template id="playertemplate">
   <div class="player">
     <div class="name">
