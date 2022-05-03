@@ -22,13 +22,13 @@
 <div class="game">
 
   <div class="players box">
-    <h2>Ludantoj <button class="add">+</button></h2>
+    <h2>Ludantoj <button class="inline add">+</button></h2>
     <div class="list">
     </div>
   </div>
 
   <div class="story box">
-    <h2>Rakonto</h2>
+    <h2>Rakonto <button class="inline add">+</button></h2>
     <div class="list">
     </div>
   </div>
@@ -39,8 +39,18 @@
   <div class="prompt">
     <h2>Nova ludanto</h2>
     <form>
-      <div>Nomo: <input type="text" name="name"></div>
-      <div><button type="submit">kreu</button> <button type="button" name="cancel">nuligi</button></div>
+      <p>Nomo: <input type="text" name="name"></p>
+      <p><button type="submit">kreu</button> <button type="button" name="cancel">nuligi</button></p>
+    </form>
+  </div>
+</div>
+
+<div class="newevent overlay">
+  <div class="prompt">
+    <h2>Kio okazas?</h2>
+    <form class="input">
+      <p><textarea name="text"></textarea></p>
+      <p><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></p>
     </form>
   </div>
 </div>
@@ -49,9 +59,9 @@
   <div class="prompt">
     <h2>Kion fari?</h2>
     <form class="input">
-      <div class="status">prompt</div>
-      <div>Nomo: <input type="text" name="name"></div>
-      <div><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></div>
+      <p class="status">prompt</p>
+      <p><textarea name="name"></textarea></p>
+      <p><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></p>
     </form>
   </div>
 </div>
@@ -60,13 +70,16 @@
   <div class="prompt">
     <h2>Provu</h2>
     <div class="result">
-      <div class="status">prompt</div>
-      <div>Por: <span class="for"></span></div>
-      <div>Kontraŭ: <span class="against"></span></div>
+      <p class="status">prompt</p>
+      <p class="diceroll">
+        <span>por <span class="for"></span></span>
+        <span><span class="success"></span></span>
+        <span>kontraŭ <span class="against"></span></span>
+      </p>
       <form class="input">
-        <div>Sekvo:</div>
-        <div><textarea name="next"></textarea></div>
-        <div><button>fini</button></div>
+        <p class="newskill">Nova kapablo: <input type="text" name="skill"></p>
+        <p><textarea name="next"></textarea></p>
+        <p><button>fini</button></p>
       </form>
     </div>
   </div>
@@ -74,10 +87,15 @@
 
 <template id="playertemplate">
   <div class="player">
-    <div class="name">
-    </div>
-    <div class="skills">
-    </div>
+    <h3><span class="name"></span> <button class="inline delete">[x]</button></h3>
+    <table>
+      <tr>
+        <th>Havas:</th><td>SP: <span class="xp"></span></td>
+      </tr>
+      <tr>
+        <th>Povas:</th><td class="skills"></td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -87,8 +105,8 @@
 </template>
 
 <template id="eventtemplate">
-  <div class="event">
-  </div>
+  <p class="event">
+  </p>
 </template>
 
 </body>
