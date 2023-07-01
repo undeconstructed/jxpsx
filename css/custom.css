@@ -11,6 +11,18 @@ body {
 button, input, textarea {
   border-radius: .2rem;
 }
+input, textarea {
+  border: 1px inset rgb(213, 232, 210);
+  background: white;
+}
+button {
+  border: 1px outset rgb(213, 232, 210);
+  background: rgb(213, 232, 210);
+  padding: .5em;
+}
+button:active {
+  border-style: inset;
+}
 
 button.inline {
   border: none;
@@ -49,11 +61,14 @@ button.inline:hover {
   flex-flow: column nowrap;
   row-gap: .5rem;
   font-size: smaller;
+  padding: 8px;
+  margin: -5px;
 }
 
 .player {
   background: #c2dbc1;
   border-radius: .2rem;
+  box-shadow: 3px 3px 5px 0px #93876E;
 }
 .player h3 {
   border-bottom: 2px solid #d7ead8;
@@ -80,6 +95,9 @@ button.inline:hover {
 .story .list {
   overflow-y: auto;
 }
+.story .event {
+  transition: opacity .5s;
+}
 
 .overlay {
   display: none;
@@ -96,7 +114,7 @@ button.inline:hover {
   background: var(--base);
   border-radius: .5rem;
   width: 30rem;
-  max-height: 30rem;
+  /* max-height: 30rem; */
   padding: 1rem;
 }
 
@@ -107,24 +125,46 @@ button.inline:hover {
   width: 100%;
 }
 
+.makeaction .difficulty {
+  font-size: 3em;
+  text-align: center;
+  margin-top: -.5em;
+}
+.makeaction .difficulty input[type="radio"] {
+  display: none;
+}
+.makeaction .difficulty label {
+  margin: 0 .5rem 0 0;
+}
+.makeaction .difficulty input:checked+label {
+  color: red;
+}
+
 .tryaction .newskill {
   display: none;
 }
 .tryaction.newskill .newskill {
   display: unset;
 }
-.tryaction .diceroll {
+.tryaction .newskill input {
+  width: 100%;
+}
+.tryaction .diceroll > div {
+  padding: .5rem 0;
+}
+.tryaction .diceroll > div {
   width: 100%;
   display: flex;
   flex-flow: row nowrap;
   text-align: center;
   align-items: center;
 }
-.tryaction .diceroll > span {
+.tryaction .diceroll > div > span {
   flex: 1;
 }
-.tryaction .diceroll > span > span {
-  font-size: 300%;
+.tryaction .diceroll > div > span > span {
+  font-size: 3rem;
+  line-height: 3rem;
   display: block;
 }
 .tryaction textarea {

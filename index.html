@@ -45,6 +45,16 @@
   </div>
 </div>
 
+<div class="addrule overlay">
+  <div class="prompt">
+    <h2>Kiel la mondo funkcias?</h2>
+    <form class="input">
+      <p><textarea name="text"></textarea></p>
+      <p><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></p>
+    </form>
+  </div>
+</div>
+
 <div class="newevent overlay">
   <div class="prompt">
     <h2>Kio okazas?</h2>
@@ -61,6 +71,15 @@
     <form class="input">
       <p class="status">prompt</p>
       <p><textarea name="name"></textarea></p>
+      <p>Kiom malfacile?!</p>
+      <div class="difficulty">
+        <input type="radio" name="difficulty" required value="1" id="diff-1" checked/><label for="diff-1">⚀</label>
+        <input type="radio" name="difficulty" required value="2" id="diff-2"/><label for="diff-2">⚁</label>
+        <input type="radio" name="difficulty" required value="3" id="diff-3"/><label for="diff-3">⚂</label>
+        <input type="radio" name="difficulty" required value="4" id="diff-4"/><label for="diff-4">⚃</label>
+        <input type="radio" name="difficulty" required value="5" id="diff-5"/><label for="diff-5">⚄</label>
+        <input type="radio" name="difficulty" required value="6" id="diff-6"/><label for="diff-6">⚅</label>
+      </div>
       <p><button type="submit">ek</button> <button type="button" name="cancel">nuligi</button></p>
     </form>
   </div>
@@ -68,19 +87,27 @@
 
 <div class="tryaction overlay">
   <div class="prompt">
-    <h2>Provu</h2>
+    <h2>Provo</h2>
     <div class="result">
       <p class="status">prompt</p>
-      <p class="diceroll">
-        <span>por <span class="for"></span></span>
-        <span><span class="success"></span></span>
-        <span>kontraŭ <span class="against"></span></span>
-      </p>
-      <form class="input">
-        <p class="newskill">Nova kapablo: <input type="text" name="skill"></p>
-        <p><textarea name="next"></textarea></p>
-        <p><button>fini</button></p>
-      </form>
+      <div class="diceroll">
+        <div>
+          <span>por <span class="for"></span></span>
+          <span><span class="success"></span></span>
+          <span>kontraŭ <span class="against"></span></span>
+        </div>
+      </div>
+      <div class="input">
+        <form>
+          <div class="newskill">
+            <p>Nova kapablo:</p>
+            <p><input type="text" name="skill"></p>
+          </div>
+          <p>La rakonto daŭras:</p>
+          <p><textarea name="next"></textarea></p>
+          <p><button>fini</button></p>
+        </form>
+      </div>
     </div>
   </div>
 </div>

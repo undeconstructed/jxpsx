@@ -129,8 +129,10 @@ function makeStoryBox(_data, up) {
         let ev = s.events[seen]
         let ediv = eventTmpl()
         ediv.textContent = ev.text
+        ediv.style.opacity = 0
         list.append(ediv)
         ediv.scrollIntoView()
+        ediv.style.opacity = 1
       }
     }
   }
@@ -160,9 +162,11 @@ function makeNewEventBox(_data, up) {
   })()
 
   let doMake = text => {
-    up.send({
-      do: 'insertevent',
-      text: text,
+    text.split('\n\n').forEach(e => {
+      up.send({
+        do: 'insertevent',
+        text: e,
+      })
     })
   }
 
@@ -233,18 +237,19 @@ function makeNewPlayerBox(_data, up) {
 function makeMakeActionBox(_data, up) {
   let div = document.querySelector('.makeaction')
   let form = div.querySelector('form')
-  let nameBox = form.querySelector('[name=name]')
 
   let state = null
 
   ;(() => {
     form.addEventListener('submit', e => {
       e.preventDefault()
-      let name = nameBox.value
+      let f = new FormData(form)
+      let name = f.get("name")
       if (!name) {
         return
       }
-      doTry(name)
+      let difficulty = parseInt(f.get("difficulty"))
+      doTry(name, difficulty)
       close()
     })
     form.querySelector('[name=cancel]').addEventListener('click', e => {
@@ -253,12 +258,13 @@ function makeMakeActionBox(_data, up) {
     })
   })()
 
-  let doTry = name => {
+  let doTry = (name, difficulty) => {
     up.send({
       do: 'tryaction',
       player: state.player,
       skill: state.skill,
       name: name,
+      difficulty: difficulty,
     })
   }
 
@@ -287,18 +293,28 @@ function makeMakeActionBox(_data, up) {
 function makeTryActionBox(_data, up) {
   let div = document.querySelector('.tryaction')
   let result = div.querySelector('.result')
-  let form = div.querySelector('form')
-  let skillBox = form.querySelector('[name=skill]')
+
+  let statusBox = result.querySelector('.status')
+  let diceBox = result.querySelector('.diceroll')
+  let diceBoxFor = diceBox.querySelector('.for')
+  let diceBoxAgainst = diceBox.querySelector('.against')
+  let diceBoxSuccess = diceBox.querySelector('.success')
+  let inputBox = result.querySelector('.input')
+
+  let appearOrder = [statusBox, diceBox, diceBoxFor, diceBoxAgainst, diceBoxSuccess, inputBox]
+
+  let form = inputBox.querySelector('form')
   let nextBox = form.querySelector('[name=next]')
 
   ;(() => {
     form.addEventListener('submit', e => {
       e.preventDefault()
-      let next = nextBox.value
+      let f = new FormData(form)
+      let next = f.get("next")
       if (!next) {
         return
       }
-      let skill = skillBox.value
+      let skill = f.get("skill")
       doFinish(next, skill)
       close()
     })
@@ -325,19 +341,12 @@ function makeTryActionBox(_data, up) {
     return s
   }
 
-  let normalizeScore = n => {
-    // TODO - some sort of scaling
-    if (n < -2) n = -2
-    if (n > 2) n = 2
-    return n
-  }
-
   let makeFaceString = n => {
     let p = (n+2) * 2
     return faceEmojis.substring(p, p+2)
   }
 
-  let tweakAction = action => {
+  let tweakActionText = action => {
     let space0 = action.indexOf(' ')
     if (space0 === -1) {
       space0 = action.length
@@ -353,50 +362,74 @@ function makeTryActionBox(_data, up) {
     return action
   }
 
+  let insertContent = s => {
+    let attempt = s.attempt
+
+    let m = `${attempt.action.player.name} provas ${attempt.action.name}, per '${attempt.action.skill.name}' je nivelo ${attempt.action.skill.level}`
+    result.querySelector('.status').textContent = m
+
+    let success = attempt.result.success
+
+    result.querySelector('.for').textContent = makeDiceString(attempt.result.diceFor)
+    result.querySelector('.against').textContent = makeDiceString(attempt.result.diceAgainst)
+    result.querySelector('.success').textContent = makeFaceString(success)
+
+    let player = attempt.action.player
+    let action = attempt.action.name
+
+    let text = `${player.name} `
+
+    if (success == 2) {
+      text += `tute sukcese ${tweakActionText(action)}`
+    } else if (success == 1) {
+      text += tweakActionText(action)
+    } else if (success == 0) {
+      text += `iom sukcese ${tweakActionText(action)}`
+    } else {
+      if (success == -1) {
+        text += `sensukcese provas ${action}`
+      } else {
+        text += `tute fuŝas provon ${action}`
+      }
+      if (attempt.result.xp > 0) {
+        text += `, sed gajnas ${attempt.result.xp} spert-poentojn`
+      }
+    }
+    if (attempt.result.freeSkill) {
+      text += `, kaj gajnos novan kapablon`
+    } else if (attempt.result.paidSkill) {
+      text += `, kaj rajtas aĉeti kapablon`
+    }
+    text += ', kaj ...'
+    nextBox.value = text
+
+    div.classList.toggle('newskill', attempt.result.freeSkill || attempt.result.paidSkill)
+  }
+
+  let showPieces = () => {
+    let f = () => {
+      for (let e of appearOrder) {
+        if (e.style.display == 'none') {
+          e.style.display = e.style.wantDisplay
+          return
+        }
+      }
+      clearInterval(t)
+    }
+    let t = setInterval(f, 1000)
+  }
+
   let onUpdate = s => {
     if (s.attempt) {
-      let attempt = s.attempt
-
-      let m = `${attempt.action.player.name} provas ${attempt.action.name}, per '${attempt.action.skill.name}' je nivelo ${attempt.action.skill.level}`
-      result.querySelector('.status').textContent = m
-
-      let nscore = normalizeScore(attempt.result.success)
-
-      result.querySelector('.for').textContent = makeDiceString(attempt.result.diceFor)
-      result.querySelector('.against').textContent = makeDiceString(attempt.result.diceAgainst)
-      result.querySelector('.success').textContent = makeFaceString(nscore)
-
-      let player = attempt.action.player
-      let action = attempt.action.name
-
-      let text = `${player.name} `
-
-      if (nscore == 2) {
-        text += `tute sukcese ${tweakAction(action)}`
-      } else if (nscore == 1) {
-        text += tweakAction(action)
-      } else if (nscore == 0) {
-        text += `iom sukcese ${tweakAction(action)}`
-      } else {
-        if (nscore == -1) {
-          text += `sensukcese provas ${action}`
-        } else {
-          text += `tute fuŝas provon ${action}`
-        }
-        if (attempt.result.xp > 0) {
-          text += `, sed gajnas ${attempt.result.xp} spert-poentojn`
-        }
-      }
-      if (attempt.result.newSkill) {
-        text += `, kaj gajnos novan kapablon`
-      }
-      text += ', kaj ...'
-      nextBox.value = text
-
-      div.classList.toggle('newskill', attempt.result.newSkill)
+      insertContent(s)
+      showPieces()
       div.classList.add('open')
     } else {
       div.classList.remove('open')
+      for (let e of appearOrder) {
+        e.style.wantDisplay = e.style.display
+        e.style.display = 'none'
+      }
     }
   }
 
@@ -474,14 +507,44 @@ function makeKernel() {
   }
 
   let doTryAction = c => {
+    if (state.attempt) {
+      alert('error 1')
+      return
+    }
+
     let time = state.time
     state.time = time + 1
 
     let yRolls = multiRoll(c.skill.level)
-    let nRolls = multiRoll(c.skill.level)
+    let nRolls = multiRoll(c.difficulty)
+
+    let maxWin = yRolls.length*6 - nRolls.length*1
+    let maxLoss = -(yRolls.length*1 - nRolls.length*6)
+
     let ySum = yRolls.reduce((accum, value) => accum + value, 0)
     let nSum = nRolls.reduce((accum, value) => accum + value, 0)
-    let allSix = yRolls.every(value => value == 6)
+
+    let success = 0
+
+    let diff = ySum - nSum
+    if (diff > 0) {
+      success = diff / maxWin
+      success = Math.ceil(2*success)
+    } else if (diff == 0) {
+      success = 0
+    } else {
+      success = diff / maxLoss
+      success = Math.floor(2*success)
+    }
+
+    // free skill is when all sixes are thrown
+    let freeSkill = ySum == 6*c.skill.level
+    // paid skill is when an xp can be spent, so need at least as many XP as there are non-sixes
+    let notSixes = yRolls.reduce((accum, value) => accum += (value == 6 ? 0 : 1), 0)
+    let paidSkill = !freeSkill && ySum == (6*c.skill.level)-1 && c.player.xp >= notSixes
+  
+    // xp is just 1 if not success
+    let xp = success < 0 ? 1 : 0
 
     state.attempt = {
       time: time,
@@ -493,10 +556,12 @@ function makeKernel() {
       result: {
         diceFor: yRolls,
         diceAgainst: nRolls,
-        success: ySum-nSum,
-        xp: nSum-ySum,
-        newSkill: allSix,
-      }
+        success: success,
+        xp: xp,
+        freeSkill: freeSkill,
+        paidSkill: paidSkill,
+      },
+      skillCost: notSixes,
     }
 
     sendUpdate(state)
@@ -511,12 +576,21 @@ function makeKernel() {
         attempt.action.player.xp += attempt.result.xp
         localStorage.setItem('players', JSON.stringify(state.players))
       }
-      if (attempt.result.newSkill && c.skill) {
+      if (attempt.result.freeSkill && c.skill) {
         let newSkill = {
           name: c.skill,
           level: attempt.action.skill.level + 1
         }
         attempt.action.player.skills.push(newSkill)
+        localStorage.setItem('players', JSON.stringify(state.players))
+      }
+      if (attempt.result.paidSkill && c.skill) {
+        let newSkill = {
+          name: c.skill,
+          level: attempt.action.skill.level + 1
+        }
+        attempt.action.player.skills.push(newSkill)
+        attempt.action.player.xp -= attempt.skillCost
         localStorage.setItem('players', JSON.stringify(state.players))
       }
     }
