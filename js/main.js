@@ -309,20 +309,33 @@ function makeTryActionBox(_data, up) {
   ;(() => {
     form.addEventListener('submit', e => {
       e.preventDefault()
-      let f = new FormData(form)
-      let next = f.get("next")
-      if (!next) {
-        return
-      }
-      let skill = f.get("skill")
-      doFinish(next, skill)
-      close()
+      doSubmitForm()
     })
   })()
 
   let close = () => {
     div.classList.remove('open')
     form.reset()
+  }
+
+  let doSubmitForm = () => {
+    let f = new FormData(form)
+    let next = f.get("next")
+    if (!next) {
+      return
+    }
+    let skill = ""
+    let ms = /(.*)\[(.*)\](.*)/.exec(next)
+    if (ms && ms.length == 4) {
+      if (ms[2] != 'xxx') {
+        next = ms[1] + ms[2] + ms[3]
+        skill = ms[2]
+      } else {
+        next = ms[1] + ms[3]
+      }
+    }
+    doFinish(next, skill)
+    close()
   }
 
   let doFinish = (text, skill) => {
@@ -396,14 +409,12 @@ function makeTryActionBox(_data, up) {
       }
     }
     if (attempt.result.freeSkill) {
-      text += `, kaj gajnos novan kapablon`
+      text += `, kaj gajnos novan kapablon [xxx]`
     } else if (attempt.result.paidSkill) {
-      text += `, kaj rajtas aĉeti kapablon`
+      text += `, kaj rajtas aĉeti kapablon [xxx]`
     }
     text += ', kaj ...'
     nextBox.value = text
-
-    div.classList.toggle('newskill', attempt.result.freeSkill || attempt.result.paidSkill)
   }
 
   let showPieces = () => {
